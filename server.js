@@ -16,7 +16,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 
-var COMMENTS_FILE = path.join(__dirname, 'comments.json');
+var LIST_NEWS_FILE = path.join(__dirname, 'listnews.json');
 
 app.set('port', (process.env.PORT || 3000));
 
@@ -35,8 +35,8 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.get('/api/comments', function(req, res) {
-  fs.readFile(COMMENTS_FILE, function(err, data) {
+app.get('/api/listnews', function(req, res) {
+  fs.readFile(LIST_NEWS_FILE, function(err, data) {
     if (err) {
       console.error(err);
       process.exit(1);
@@ -45,8 +45,8 @@ app.get('/api/comments', function(req, res) {
   });
 });
 
-app.post('/api/comments', function(req, res) {
-  fs.readFile(COMMENTS_FILE, function(err, data) {
+app.post('/api/listnews', function(req, res) {
+  fs.readFile(LIST_NEWS_FILE, function(err, data) {
     if (err) {
       console.error(err);
       process.exit(1);
@@ -61,7 +61,7 @@ app.post('/api/comments', function(req, res) {
       text: req.body.text,
     };
     comments.push(newComment);
-    fs.writeFile(COMMENTS_FILE, JSON.stringify(comments, null, 4), function(err) {
+    fs.writeFile(LIST_NEWS_FILE, JSON.stringify(comments, null, 4), function(err) {
       if (err) {
         console.error(err);
         process.exit(1);
