@@ -51,22 +51,22 @@ app.post('/api/listnews', function(req, res) {
       console.error(err);
       process.exit(1);
     }
-    var comments = JSON.parse(data);
+    var news = JSON.parse(data);
     // NOTE: In a real implementation, we would likely rely on a database or
     // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
     // treat Date.now() as unique-enough for our purposes.
-    var newComment = {
-      id: Date.now(),
-      author: req.body.author,
-      text: req.body.text,
+    var newNews = {
+      id: req.body.id,
+      title: req.body.title,
+      content: req.body.content,
     };
-    comments.push(newComment);
-    fs.writeFile(LIST_NEWS_FILE, JSON.stringify(comments, null, 4), function(err) {
+    news.push(newNews);
+    fs.writeFile(LIST_NEWS_FILE, JSON.stringify(news, null, 4), function(err) {
       if (err) {
         console.error(err);
         process.exit(1);
       }
-      res.json(comments);
+      res.json(news);
     });
   });
 });

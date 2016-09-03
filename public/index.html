@@ -40,6 +40,52 @@
         }
       });
 
+      var NewsForm = React.createClass({
+        getInitialState: function() {
+          return {title: '', content: ''};
+        },
+
+        handleTitleChange: function(e) {
+          this.setState({title: e.target.value});
+        },
+
+        handleContentChange: function(e) {
+          this.setState({content: e.target.value});
+        },
+
+        handleSubmit: function(e) {
+          e.preventDefault();
+          var title = this.state.title.trim();
+          var content = this.state.content.trim();
+
+          if (!title || !content) {
+            return;
+          }
+
+          // TODO" send request to the server
+          this.props.onNewsSubmit({title: title, content: content});
+          this.setState({title: '', content: ''});
+        },
+
+        render: function() {
+          return (
+            <form className="addNewForm" onSubmit={this.handleSubmit}>
+              <input 
+                type="text" 
+                placeholder="title"
+                value={this.state.title} 
+                onChange={this.handleTitleChange} />
+              <input 
+                type="text" 
+                placeholder="content"
+                value={this.state.content} 
+                onChange={this.handleContentChange} />
+              <input type="submit" value="Post" />
+            </form>
+          );
+        }
+      });
+
       var BoxNews = React.createClass({
         getInitialState: function() {
           return {listNews: []};
@@ -51,6 +97,7 @@
             dataType: 'json',
             cache: false,
             success: function(data) {
+            console.log('data', data);
               this.setState({listNews: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -64,11 +111,33 @@
           setInterval(this.loadingCommentFromServer, this.props.timePolling);
         },
 
+        handleNewsSubmit: function(news) {
+          var newsList = this.state.listNews;
+          news.id = Date.now();
+          var newNews = newsList.concat([news]);
+          this.setState({listNews: newNews});
+          // TODO: submit to the server and refresh the list
+          $.ajax({
+            url: this.props.url,
+            dataType: 'json',
+            type: 'POST',
+            data: news,
+            success: function(data) {
+              this.setState({listNews: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              this.setState({listNews: data});
+              console.error(this.props.url, status, err.toString());
+            }.bind(this)
+          });
+        },
+
         render: function() {
           return (
             <div className="box-news">
               <h1>List Hot News</h1>
               <ListNews listNews={this.state.listNews}></ListNews>
+              <NewsForm onNewsSubmit={this.handleNewsSubmit}></NewsForm>
             </div>
           );  
         }
